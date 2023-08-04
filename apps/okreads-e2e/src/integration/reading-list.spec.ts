@@ -11,4 +11,17 @@ describe('When: I use the reading list feature', () => {
       'My Reading List'
     );
   });
+
+  it('Then: I should set mark as read from reading list', () => {
+    cy.get('input[type="search"]').type('javascript');
+    cy.get('form').submit();
+    cy.get('[data-testing="add-to-readList"]').first().click();
+    cy.wait(500);
+    cy.get('[data-testing="toggle-reading-list"]').first().click();
+    cy.get('[data-testing="mark-book-as-read"]').last().click();
+    cy.get('[data-testing="mark-book-as-read"]').should(
+      'contain.text',
+      'Finished'
+    );
+  });
 });
