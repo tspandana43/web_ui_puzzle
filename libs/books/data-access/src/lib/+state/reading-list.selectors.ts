@@ -1,13 +1,14 @@
-import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { BooksPartialState } from './books.reducer';
-import { getBooks } from './books.selectors';
+import { Book, ReadingListItem } from '@tmo/shared/models';
 import {
   READING_LIST_FEATURE_KEY,
-  readingListAdapter,
   ReadingListPartialState,
-  State
+  State,
+  readingListAdapter,
 } from './reading-list.reducer';
-import { Book, ReadingListItem } from '@tmo/shared/models';
+import { createFeatureSelector, createSelector } from '@ngrx/store';
+
+import { BooksPartialState } from './books.reducer';
+import { getBooks } from './books.selectors';
 
 export const getReadingListState = createFeatureSelector<
   ReadingListPartialState,
@@ -17,7 +18,7 @@ export const getReadingListState = createFeatureSelector<
 const {
   selectEntities,
   selectAll,
-  selectTotal
+  selectTotal,
 } = readingListAdapter.getSelectors();
 
 export const getReadingListEntities = createSelector(
@@ -35,7 +36,14 @@ export const getAllBooks = createSelector<
   Record<string, ReadingListItem>,
   ReadingListBook[]
 >(getBooks, getReadingListEntities, (books, entities) => {
-  return books.map(b => ({ ...b, isAdded: Boolean(entities[b.id]) }));
+  return books.map((book) => {
+    const list = entities[book.id];
+    return {
+      ...book,
+      isAdded: Boolean(list),
+      completed: list?.finished,
+    };
+  });
 });
 
 export const getReadingList = createSelector(getReadingListState, selectAll);
